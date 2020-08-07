@@ -31,6 +31,21 @@
           <div class="participant main">
             <video autoplay playsinline muted></video>
           </div>
+          <p style="font-size:50px;" id="transcription-container"></p>
+          <script>
+            document.getElementById("transcription-container").innerHTML =
+                    "test";
+            document.addEventListener("DOMContentLoaded", (event) => {
+              webSocket = new WebSocket("wss://hackathon-voice-demo.rsunga02.com:8080");
+              webSocket.onmessage = function (msg) {
+                const data = JSON.parse(msg.data);
+                if (data.event === "interim-transcription") {
+                  document.getElementById("transcription-container").innerHTML =
+                          "test";
+                }
+              };
+            });
+          </script>
         </div>
       </div>
       <div id="modals">
