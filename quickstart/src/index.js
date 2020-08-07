@@ -153,3 +153,30 @@ async function selectMicrophone() {
 window.addEventListener('load', isSupported ? selectMicrophone : () => {
   showError($showErrorModal, new Error('This browser is not supported.'));
 });
+
+const startStreamButton = document.getElementById('start-stream-btn');
+startStreamButton.addEventListener('click', async _ => {
+  try {
+    const response = await fetch('https://hackathon-voice-websockets.rsunga02.com/startStream', {
+      method: 'post',
+      body: {}
+    });
+    console.log('Completed!', response);
+  } catch(err) {
+    console.error(`Error: ${err}`);
+  }
+});
+
+
+const switchLanguageButton = document.getElementById('switch-language-btn');
+switchLanguageButton.addEventListener('click', async _ => {
+  try {
+    const response = await fetch('https://hackathon-voice-websockets.rsunga02.com/switch', {
+      method: 'post',
+      body: {}
+    });
+    console.log('Completed!', response);
+  } catch(err) {
+    console.error(`Error: ${err}`);
+  }
+});
