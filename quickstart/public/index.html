@@ -36,12 +36,12 @@
             document.getElementById("transcription-container").innerHTML =
                     "test";
             document.addEventListener("DOMContentLoaded", (event) => {
-              webSocket = new WebSocket("wss://hackathon-voice-demo.rsunga02.com:8080");
+              webSocket = new WebSocket("wss://hackathon-voice-websockets.rsunga02.com");
               webSocket.onmessage = function (msg) {
                 const data = JSON.parse(msg.data);
                 if (data.event === "interim-transcription") {
                   document.getElementById("transcription-container").innerHTML =
-                          "test";
+                          data.text;
                 }
               };
             });
