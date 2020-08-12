@@ -34,7 +34,7 @@
           <p style="font-size:40px;" id="transcription-container"></p>
           <script>
             document.getElementById("transcription-container").innerHTML =
-                    "test";
+                    "Translation will be displayed here.";
             document.addEventListener("DOMContentLoaded", (event) => {
               webSocket = new WebSocket("wss://hackathon-voice-websockets.rsunga02.com");
               webSocket.onmessage = function (msg) {
@@ -47,7 +47,7 @@
             });
           </script>
           <div class="btn-group">
-            <button id="start-stream-btn">Start Translation Stream (60 seconds)</button>
+            <button id="start-stream-btn" >Start Translation Stream (60 seconds)</button>
             <button id="switch-language-btn">Switch Translated Language (Japanese/French)</button>
           </div>
         </div>
@@ -103,8 +103,8 @@
               </div>
               <div class="modal-body">
                 <div class="form-group">
-                  <label id="room-name-label" for="room-name" value="TestRoom">Room Name (leave on TestRoom for Translation Demo)</label>
-                  <input id="room-name" class="form-control" type="text" />
+                  <label id="room-name-label" for="room-name">Room Name (leave on TestRoom for Translation Demo)</label>
+                  <input id="room-name" class="form-control" type="text" value="TestRoom" />
                 </div>
                 <div class="form-group">
                   <label id="screen-name-label" for="screen-name">User Name</label>
@@ -137,5 +137,6 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="index.js"></script>
+      <script src="custom_index.js"></script>
   </body>
 </html>

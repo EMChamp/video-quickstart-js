@@ -104,3 +104,20 @@ div.participant.main::before {
 .btn-group button:hover {
   background-color: #3e8e41;
 }
+
+/* Add animation on button click */
+#start-stream-btn:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+#switch-language-btn:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+#start-stream-btn:disabled {
+  background: #F5F5F5;
+  color : #C3C3C3;
+}
