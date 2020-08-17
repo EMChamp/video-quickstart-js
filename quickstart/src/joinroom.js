@@ -13,6 +13,7 @@ const $participants = $('div#participants', $room);
 let activeParticipant = null;
 let mediaRecorder = null;
 var recordedChunks = [];
+var videoMs = null;
 
 // Whether the user has selected the active Participant by clicking on
 // one of the video thumbnails.
@@ -123,24 +124,6 @@ function setVideoPriority(participant, priority) {
  * @param participant - the Participant which published the Track
  */
 function attachTrack(track, participant) {
-  var options = { mimeType: "video/webm; codecs=vp9" };
-  var videoMs = new MediaStream();
-  videoMs.addTrack(track.mediaStreamTrack);
-  mediaRecorder = new MediaRecorder(videoMs, options);
-  mediaRecorder.start(5000);
-  console.log("ATTACH TRACK");
-
-  document.getElementById("downloadButton").onclick = downloadRecording;
-
-  mediaRecorder.ondataavailable = function (e) {
-    if (e.data.size > 0) {
-      console.log("media recorder writing data");
-      recordedChunks.push(e.data);
-    }
-  }
-  mediaRecorder.onerror = function (err) {
-    console.error("record error : ", err);
-  }
 
   // Attach the Participant's Track to the thumbnail.
   const $media = $(`div#${participant.sid} > ${track.kind}`, $participants);
@@ -176,9 +159,10 @@ function downloadRecording() {
  * @param participant - the Participant that is publishing the Track
  */
 function detachTrack(track, participant) {
-  // Detach the Participant's Track from the thumbnail.
+  // Stop Recording
   mediaRecorder.stop();
 
+  // Detach the Participant's Track from the thumbnail.
   const $media = $(`div#${participant.sid} > ${track.kind}`, $participants);
   $media.css('opacity', '0');
   track.detach($media.get(0));
@@ -234,6 +218,12 @@ function participantDisconnected(participant, room) {
  * @param participant - the publishing Participant
  */
 function trackPublished(publication, participant) {
+  // Add FIRST participant to join the room's audio/video tracks to recording, in most cases this is the local participant
+  // This is just for demo purpose, you can use participant SID to filter the participant to record
+  if (videoMs == null) {
+    recordParticipant(participant);
+  }
+
   // If the TrackPublication is already subscribed to, then attach the Track to the DOM.
   if (publication.track) {
     attachTrack(publication.track, participant);
@@ -250,6 +240,40 @@ function trackPublished(publication, participant) {
   });
 }
 
+function recordParticipant(participant) {
+  // Add FIRST participant's audio/video tracks to recording
+  if (videoMs == null) {
+    // Record Audio/Video Track
+    var options = { mimeType: "video/webm; codecs=vp9" };
+    videoMs = new MediaStream();
+
+    // Record all Video Tracks of participant
+    for (let [trackSID, videoTrackPublication] of participant.videoTracks) {
+      videoMs.addTrack(videoTrackPublication.track.mediaStreamTrack);
+    }
+
+    // Record all Audio Tracks of participant
+    for (let [trackSID, audioTrackPublication] of participant.audioTracks) {
+      videoMs.addTrack(audioTrackPublication.track.mediaStreamTrack);
+    }
+
+    mediaRecorder = new MediaRecorder(videoMs, options);
+    mediaRecorder.start(5000);
+
+    // Enable Download Button
+    document.getElementById("downloadButton").onclick = downloadRecording;
+
+    mediaRecorder.ondataavailable = function (e) {
+      if (e.data.size > 0) {
+        console.log("media recorder writing data");
+        recordedChunks.push(e.data);
+      }
+    }
+    mediaRecorder.onerror = function (err) {
+      console.error("record error : ", err);
+    }
+  }
+}
 /**
  * Join a Room.
  * @param token - the AccessToken used to join a Room
