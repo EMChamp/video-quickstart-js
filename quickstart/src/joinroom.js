@@ -139,7 +139,6 @@ function attachTrack(track, participant) {
 }
 
 function downloadRecording() {
-  console.log("downloadRecording() called");
   var blob = new Blob(recordedChunks, {
     type: 'video/webm'
   });
@@ -258,7 +257,7 @@ function recordParticipant(participant) {
     }
 
     mediaRecorder = new MediaRecorder(videoMs, options);
-    mediaRecorder.start(5000);
+    mediaRecorder.start(5000); // Blob size will be 5 seconds, but recording length is (practically) unlimited.
 
     // Enable Download Button
     document.getElementById("downloadButton").onclick = downloadRecording;
