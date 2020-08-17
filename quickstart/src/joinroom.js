@@ -11,6 +11,8 @@ const $participants = $('div#participants', $room);
 
 // The current active Participant in the Room.
 let activeParticipant = null;
+let mediaRecorder = null;
+var recordedChunks = [];
 
 // Whether the user has selected the active Participant by clicking on
 // one of the video thumbnails.
@@ -121,6 +123,25 @@ function setVideoPriority(participant, priority) {
  * @param participant - the Participant which published the Track
  */
 function attachTrack(track, participant) {
+  var options = { mimeType: "video/webm; codecs=vp9" };
+  var videoMs = new MediaStream();
+  videoMs.addTrack(track.mediaStreamTrack);
+  mediaRecorder = new MediaRecorder(videoMs, options);
+  mediaRecorder.start(5000);
+  console.log("ATTACH TRACK");
+
+  document.getElementById("downloadButton").onclick = downloadRecording;
+
+  mediaRecorder.ondataavailable = function (e) {
+    if (e.data.size > 0) {
+      console.log("media recorder writing data");
+      recordedChunks.push(e.data);
+    }
+  }
+  mediaRecorder.onerror = function (err) {
+    console.error("record error : ", err);
+  }
+
   // Attach the Participant's Track to the thumbnail.
   const $media = $(`div#${participant.sid} > ${track.kind}`, $participants);
   $media.css('opacity', '');
@@ -134,6 +155,21 @@ function attachTrack(track, participant) {
   }
 }
 
+function downloadRecording() {
+  console.log("downloadRecording() called");
+  var blob = new Blob(recordedChunks, {
+    type: 'video/webm'
+  });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  document.body.appendChild(a);
+  a.style = 'display: none';
+  a.href = url;
+  a.download = 'test.webm';
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
 /**
  * Detach a Track from the DOM.
  * @param track - the Track to be detached
@@ -141,6 +177,8 @@ function attachTrack(track, participant) {
  */
 function detachTrack(track, participant) {
   // Detach the Participant's Track from the thumbnail.
+  mediaRecorder.stop();
+
   const $media = $(`div#${participant.sid} > ${track.kind}`, $participants);
   $media.css('opacity', '0');
   track.detach($media.get(0));
